@@ -6,6 +6,7 @@ public class Main extends JFrame implements ActionListener {
     private JButton Search_Insert_Button = new JButton("검색/추가");
     private JButton Delete_Update_Button = new JButton("삭제/수정");
     public Search_Insert search_insert;
+    public Delete_Update delete_update;
 
 
     public Main() {
@@ -38,6 +39,8 @@ public class Main extends JFrame implements ActionListener {
         if(e.getSource() == Search_Insert_Button) {
             search_insert = new Search_Insert();
 //            search_insert.button.addActionListener(this);
+        } else if (e.getSource() == Delete_Update_Button) {
+            delete_update = new Delete_Update();
         }
     }
 
