@@ -168,6 +168,23 @@ public class Delete_Update extends JFrame implements ActionListener {
 		if (e.getSource() == Delete_Button) {
 			Vector<String> delete_ssn = new Vector<String>();
 			String Ssn = Ssn_Delete.getText();
+			if(isStringEmpty(Ssn)){
+				JOptionPane.showMessageDialog(null, "공백 없이 작성해주세요");
+			}else{
+				try{
+					String sql = "DELETE FROM EMPLOYEE" +  " WHERE Ssn = " + Ssn + ";";
+					System.out.print(sql);
+					Statement s = conn.createStatement();
+					int result = s.executeUpdate(sql);
+					if (result == 0) {
+						JOptionPane.showMessageDialog(null, "삭제 실패");
+					} else {
+						JOptionPane.showMessageDialog(null, "삭제 성공");
+					}
+				}catch (Exception e1){
+					JOptionPane.showMessageDialog(null, "형식에 맞게 입력하세요");
+				}
+			}
 		}
 		// UPDATE
 
