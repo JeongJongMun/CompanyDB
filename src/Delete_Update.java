@@ -25,9 +25,9 @@ public class Delete_Update extends JFrame implements ActionListener {
 	private DefaultTableModel model;
 	private static final int BOOLEAN_COLUMN = 0;
 	private int NAME_COLUMN = 0;
-	private int SALARY_COLUMN = 0;		// salary 업데이트 시 사용
-	private int ADDRESS_COLUMN = 0;		// address 업데이트 시 사용
-	private int SEX_COLUMN = 0;			// sex 업데이트 시 사용
+	private int SALARY_COLUMN = 0;
+	private int ADDRESS_COLUMN = 0;
+	private int SEX_COLUMN = 0;
 	private String dShow;
 
 
@@ -49,19 +49,16 @@ public class Delete_Update extends JFrame implements ActionListener {
 	private JButton Delete_Button = new JButton("데이터 삭제");
 	int count = 0;
 	JPanel ComboBoxPanel = new JPanel();
+	private boolean isStringEmpty;
 
 
 	public Delete_Update() {
 
-		String[] update = {"Address","Sex","Salary" }; // 8번 추가
-		
-		//연봉, 생일, 부하직원은 입력 칸을 만들어준다.
+		String[] update = {"Address", "Sex", "Salary"};
 
 		Update = new JComboBox(update);
-		
 
 		Update.addActionListener(this);
-
 
 
 		//ComboBoxPanel.add(Dept);
@@ -70,10 +67,10 @@ public class Delete_Update extends JFrame implements ActionListener {
 		CheckBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		CheckBoxPanel.add(Search_Button);
-		
+
 		JPanel InsertPanel = new JPanel();
 		InsertPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		
+
 		JPanel CheckBoxInsertPanel = new JPanel();
 		CheckBoxInsertPanel.setLayout(new BoxLayout(CheckBoxInsertPanel, BoxLayout.X_AXIS));
 		CheckBoxInsertPanel.add(CheckBoxPanel);
@@ -86,7 +83,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 		dShow = "";
 
 		ShowSelectedPanel.add(ShowSelectedEmp);
-
 
 
 		JPanel UpdatePanel = new JPanel();
@@ -107,7 +103,7 @@ public class Delete_Update extends JFrame implements ActionListener {
 		Top.setLayout(new BoxLayout(Top, BoxLayout.Y_AXIS));
 		Top.add(ComboBoxPanel);
 		Top.add(CheckBoxInsertPanel);
-		
+
 		JPanel Halfway = new JPanel();
 		Halfway.setLayout(new BoxLayout(Halfway, BoxLayout.X_AXIS));
 		Halfway.add(ShowSelectedPanel);
@@ -171,216 +167,38 @@ public class Delete_Update extends JFrame implements ActionListener {
 		// DELETE
 		if (e.getSource() == Delete_Button) {
 			Vector<String> delete_ssn = new Vector<String>();
-
-			try {
-
-				String columnName = model.getColumnName(2);
-				if (columnName == "SSN") {
-					for (int i = 0; i < table.getRowCount(); i++) {
-						if (table.getValueAt(i, 0) == Boolean.TRUE) {
-							delete_ssn.add((String) table.getValueAt(i, 2));
-						}
-					}
-					for (int i = 0; i < delete_ssn.size(); i++) {
-						for (int k = 0; k < model.getRowCount(); k++) {
-							if (table.getValueAt(k, 0) == Boolean.TRUE) {
-								model.removeRow(k);
-								totalCount.setText(String.valueOf(table.getRowCount()));
-							}
-						}
-					}
-					for (int i = 0; i < delete_ssn.size(); i++) {
-						String deleteStmt = "DELETE FROM EMPLOYEE WHERE Ssn=?";
-						PreparedStatement p = conn.prepareStatement(deleteStmt);
-						p.clearParameters();
-						p.setString(1, String.valueOf(delete_ssn.get(i)));
-						p.executeUpdate();
-
-					}
-				} else {
-					JOptionPane.showMessageDialog(null, "삭제 작업을 진행하시려면 NAME, SSN 항목을 모두 체크해주세요.");
-				}
-
-				ShowSelectedEmp.setText(" ");
-
-			} catch (SQLException e1) {
-				System.out.println("actionPerformed err : " + e1);
-				e1.printStackTrace();
-			}
-			panel = new JPanel();
-			ScPane = new JScrollPane(table);
-			table.getModel().addTableModelListener(new CheckBoxModelListener());
-			ScPane.setPreferredSize(new Dimension(1100, 400));
-			panel.add(ScPane);
-			add(panel, BorderLayout.CENTER);
-			revalidate();
-
-		} // DELETE 끝
-
+			String Ssn = Ssn_Delete.getText();
+		}
 		// UPDATE
 
 		if (e.getSource() == Update_Button) {
 
 			Vector<String> update_ssn = new Vector<String>();
-			try {
-				String columnName = model.getColumnName(2);
-
-				System.out.println(columnName);
-				if (columnName == "SSN") {
-					if (Update.getSelectedItem().toString() == "Salary") {
-						if (model.getColumnName(SALARY_COLUMN) == "SALARY") {
-							for (int i = 0; i < table.getRowCount(); i++) {
-								if (table.getValueAt(i, 0) == Boolean.TRUE) {
-									String updateSalary = update_Salary_Address_Sex.getText();
-									table.setValueAt(Double.parseDouble(updateSalary), i, SALARY_COLUMN);
-									String updateStmt = "UPDATE EMPLOYEE SET Salary=? , modified=SYSDATE() WHERE Ssn=?";
-									PreparedStatement p = conn.prepareStatement(updateStmt);
-									p.clearParameters();
-									p.setString(1, updateSalary);
-									p.setString(2, String.valueOf((String) table.getValueAt(i, 2)));
-									p.executeUpdate();
-								}
-							}
+			String Ssn = Ssn_Update.getText();
+			String Att = update_Salary_Address_Sex.getText();
+			String Col = Update.getSelectedItem().toString();
+			if(isStringEmpty(Ssn) || isStringEmpty(Att)){
+				JOptionPane.showMessageDialog(null, "공백 없이 작성해주세요");
+			}else {
+				try {
+						String sql = "UPDATE Employee set " + Col + "=" + "\"" + Att + "\"" + " WHERE Ssn =" + Ssn + ";";
+						System.out.print(sql);
+						Statement s = conn.createStatement();
+						int result = s.executeUpdate(sql);
+						if (result == 0) {
+							JOptionPane.showMessageDialog(null, "업데이트 실패");
 						} else {
-							JOptionPane.showMessageDialog(null, "수정 작업을 위해 SALARY를 체크해주세요");
+							JOptionPane.showMessageDialog(null, "업데이트 성공");
 						}
-
-					} else if (Update.getSelectedItem().toString() == "Sex") {
-						if (model.getColumnName(SEX_COLUMN) == "SEX") {
-							for (int i = 0; i < table.getRowCount(); i++) {
-								if (table.getValueAt(i, 0) == Boolean.TRUE) {
-									//update_ssn.add((String) table.getValueAt(i, 2));
-									String updateSalary = update_Salary_Address_Sex.getText();
-									table.setValueAt(updateSalary, i, SEX_COLUMN);
-									String updateStmt = "UPDATE EMPLOYEE SET SEX=? , modified=SYSDATE() WHERE Ssn=?";
-									PreparedStatement p = conn.prepareStatement(updateStmt);
-									p.clearParameters();
-									p.setString(1, String.valueOf(updateSalary));
-									p.setString(2, String.valueOf((String) table.getValueAt(i, 2)));
-									p.executeUpdate();
-								}
-							}
-						} else {
-							JOptionPane.showMessageDialog(null, "수정 작업을 위해 SEX를 체크해주세요");
-						}
-
-					} else if (Update.getSelectedItem().toString() == "Address") {
-						if (model.getColumnName(ADDRESS_COLUMN) == "ADDRESS") {
-							for (int i = 0; i < table.getRowCount(); i++) {
-								if (table.getValueAt(i, 0) == Boolean.TRUE) {
-									//update_ssn.add((String) table.getValueAt(i, 2));
-									String updateSalary = update_Salary_Address_Sex.getText();
-									table.setValueAt(updateSalary, i, ADDRESS_COLUMN);
-									String updateStmt = "UPDATE EMPLOYEE SET Address=? , modified=SYSDATE() WHERE Ssn=?";
-									PreparedStatement p = conn.prepareStatement(updateStmt);
-									p.clearParameters();
-									p.setString(1, String.valueOf(updateSalary));
-									p.setString(2, String.valueOf((String) table.getValueAt(i, 2)));
-									p.executeUpdate();
-								}
-							}
-						} else {
-							JOptionPane.showMessageDialog(null, "수정 작업을 위해 ADDRESS를 체크해주세요");
-						}
-					} else if (Update.getSelectedItem().toString() == "Dept_Salary_R") {// 부서별로 월급 일괄 수정_Research
-						for (int i = 0; i < table.getRowCount(); i++) {
-							if (table.getValueAt(i, 8).toString().equals("Research")) {
-								String updateSalary = update_Salary_Address_Sex.getText();
-								table.setValueAt(Double.parseDouble(updateSalary), i, SALARY_COLUMN);
-								String ex = "Research";
-								String updateStmt = "UPDATE EMPLOYEE JOIN DEPARTMENT ON Dno = Dnumber SET Salary=? , modified=SYSDATE() WHERE Dname=?";
-								PreparedStatement p = conn.prepareStatement(updateStmt);
-								p.clearParameters();
-								p.setString(1, updateSalary);
-								p.setString(2, ex);
-								// System.out.println(updateSalary);
-								p.executeUpdate();
-							}
-						}
-					} else if (Update.getSelectedItem().toString() == "Dept_Salary_A") { // 부서별로 월급 일괄 수정_Administration
-						for (int i = 0; i < table.getRowCount(); i++) {
-							if (table.getValueAt(i, 8).toString().equals("Administration")) {
-								String updateSalary = update_Salary_Address_Sex.getText();
-								table.setValueAt(Double.parseDouble(updateSalary), i, SALARY_COLUMN);
-								String ex = "Administration";
-								String updateStmt = "UPDATE EMPLOYEE JOIN DEPARTMENT ON Dno = Dnumber SET Salary=? , modified=SYSDATE() WHERE Dname=?";
-								PreparedStatement p = conn.prepareStatement(updateStmt);
-								p.clearParameters();
-								p.setString(1, updateSalary);
-								p.setString(2, ex);
-								// System.out.println(updateSalary);
-								p.executeUpdate();
-
-							}
-						}
-					} else if (Update.getSelectedItem().toString() == "Dept_Salary_H") { // 부서별로 월급 일괄 수정_Headquarters
-						for (int i = 0; i < table.getRowCount(); i++) {
-							if (table.getValueAt(i, 8).toString().equals("Headquarters")) {
-								String updateSalary = update_Salary_Address_Sex.getText();
-								table.setValueAt(Double.parseDouble(updateSalary), i, SALARY_COLUMN);
-								String ex = "Headquarters";
-								String updateStmt = "UPDATE EMPLOYEE JOIN DEPARTMENT ON Dno = Dnumber SET Salary=? , modified=SYSDATE() WHERE Dname=?";
-								PreparedStatement p = conn.prepareStatement(updateStmt);
-								p.clearParameters();
-								p.setString(1, updateSalary);
-								p.setString(2, ex);
-								// System.out.println(updateSalary);
-								p.executeUpdate();
-							}
-						}
-
-					} else {
-						JOptionPane.showMessageDialog(null, "수정 작업을 위해 Name과 SSN열을 체크해주시기 바랍니다.");
-					}
-				}
-				ShowSelectedEmp.setText(" ");
-
-			} catch (SQLException e1) {
-				System.out.println("actionPerformed err : " + e1);
-				e1.printStackTrace();
-			}
-			panel = new JPanel();
-			ScPane = new JScrollPane(table);
-			table.getModel().addTableModelListener(new CheckBoxModelListener());
-			ScPane.setPreferredSize(new Dimension(1100, 400));
-			panel.add(ScPane);
-			add(panel, BorderLayout.CENTER);
-			revalidate();
-		} // UPDATE 끝
-	}
-
-	public class CheckBoxModelListener implements TableModelListener {
-		public void tableChanged(TableModelEvent e) {
-			int row = e.getFirstRow();
-			int column = e.getColumn();
-			if (column == BOOLEAN_COLUMN) {
-				TableModel model = (TableModel) e.getSource();
-				String columnName = model.getColumnName(1);
-				Boolean checked = (Boolean) model.getValueAt(row, column);
-				if (columnName == "NAME") {
-					if (checked) {
-						dShow = "";
-						for (int i = 0; i < table.getRowCount(); i++) {
-							if (table.getValueAt(i, 0) == Boolean.TRUE) {
-								dShow += (String) table.getValueAt(i, NAME_COLUMN) + "    ";
-
-							}
-						}
-						ShowSelectedEmp.setText(dShow);
-					} else {
-						dShow = "";
-						for (int i = 0; i < table.getRowCount(); i++) {
-							if (table.getValueAt(i, 0) == Boolean.TRUE) {
-								dShow += (String) table.getValueAt(i, 1) + "    ";
-							}
-						}
-						ShowSelectedEmp.setText(dShow);
+					} catch(Exception e1){
+						JOptionPane.showMessageDialog(null, "형식에 맞게 입력하세요");
 					}
 				}
 			}
-		}
 	}
-
+	static boolean isStringEmpty(String str) {
+		return str == null || str.isEmpty();
+	}
 	public static void main(String[] args) {
 		new Delete_Update();
 	}
