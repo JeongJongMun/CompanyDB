@@ -38,7 +38,6 @@ public class Main extends JFrame implements ActionListener {
 
         if(e.getSource() == Search_Insert_Button) {
             search_insert = new Search_Insert();
-//            search_insert.button.addActionListener(this);
         } else if (e.getSource() == Delete_Update_Button) {
             delete_update = new Delete_Update();
         }

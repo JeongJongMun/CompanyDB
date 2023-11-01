@@ -14,30 +14,10 @@ public class Delete_Update extends JFrame implements ActionListener {
 	public Connection conn;
 	public Statement s;
 	public ResultSet r;
-
 	private JComboBox Update;
 	private JTable resultTable = new JTable();
 
-
-	private Vector<String> Head = new Vector<String>();
-
-	private JTable table;
-	private DefaultTableModel model;
-	private static final int BOOLEAN_COLUMN = 0;
-	private int NAME_COLUMN = 0;
-	private int SALARY_COLUMN = 0;
-	private int ADDRESS_COLUMN = 0;
-	private int SEX_COLUMN = 0;
-	private String dShow;
-
-
 	private JButton Search_Button = new JButton("검색");
-	Container me = this;
-
-
-	final JLabel totalCount = new JLabel();
-	JPanel panel;
-	JScrollPane ScPane;
 
 	private JLabel ShowSelectedEmp = new JLabel();
 	private JLabel Setlabel_Update = new JLabel("Ssn 입력: ");
@@ -49,8 +29,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 	private JButton Delete_Button = new JButton("데이터 삭제");
 	int count = 0;
 	JPanel ComboBoxPanel = new JPanel();
-	private boolean isStringEmpty;
-
 
 	public Delete_Update() {
 
@@ -59,9 +37,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 		Update = new JComboBox(update);
 
 		Update.addActionListener(this);
-
-
-		//ComboBoxPanel.add(Dept);
 
 		JPanel CheckBoxPanel = new JPanel();
 		CheckBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -80,7 +55,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 		ShowSelectedPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		ShowSelectedEmp.setFont(new Font("Dialog", Font.BOLD, 16));
-		dShow = "";
 
 		ShowSelectedPanel.add(ShowSelectedEmp);
 
@@ -127,7 +101,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 		Update_Button.addActionListener(this);
 
 		setTitle("Company Information");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1300, 600);
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -137,7 +110,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 
 		// DB연결
 		try {
-//			Class.forName("com.mysql.cj.jdbc.Driver"); // JDBC 드라이버 연결
 
 			String user = "root";
 			String pwd = "12345678"; // 비밀번호 입력
@@ -166,7 +138,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 
 		// DELETE
 		if (e.getSource() == Delete_Button) {
-			Vector<String> delete_ssn = new Vector<String>();
 			String Ssn = Ssn_Delete.getText();
 			if(isStringEmpty(Ssn)){
 				JOptionPane.showMessageDialog(null, "공백 없이 작성해주세요");
@@ -189,8 +160,6 @@ public class Delete_Update extends JFrame implements ActionListener {
 		// UPDATE
 
 		if (e.getSource() == Update_Button) {
-
-			Vector<String> update_ssn = new Vector<String>();
 			String Ssn = Ssn_Update.getText();
 			String Att = update_Salary_Address_Sex.getText();
 			String Col = Update.getSelectedItem().toString();
