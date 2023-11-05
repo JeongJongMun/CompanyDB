@@ -18,11 +18,9 @@ public class Search_Insert extends JFrame implements ActionListener {
 	private JButton searchButton = new JButton("보고서 출력");
 	private JButton executeButton = new JButton("SQL 실행");
 	private JLabel selectLabel = new JLabel("선택할 속성:");
-	private JLabel fromLabel = new JLabel("선택할 테이블:");
 	private JLabel whereLabel = new JLabel("선택할 조건:");
 	private JLabel sortLabel = new JLabel("정렬 조건:");
 	private JTextArea selectTextArea = new JTextArea(3, 10);
-	private JTextArea fromTextArea = new JTextArea(3, 10);
 	private JTextArea whereTextArea = new JTextArea(3, 10);
 	private JTextArea sortTextArea = new JTextArea(3, 10);
 	private JTable resultTable = new JTable();
@@ -42,9 +40,6 @@ public class Search_Insert extends JFrame implements ActionListener {
 
 		Top.add(selectLabel);
 		Top.add(selectTextArea, BorderLayout.CENTER);
-
-		Top.add(fromLabel);
-		Top.add(fromTextArea, BorderLayout.CENTER);
 
 		Top.add(whereLabel);
 		Top.add(whereTextArea, BorderLayout.CENTER);
@@ -73,7 +68,7 @@ public class Search_Insert extends JFrame implements ActionListener {
 
 		try {
 			String user = "root";
-			String pwd = "123456789"; // 비밀번호 입력
+			String pwd = "12345678"; // 비밀번호 입력
 			String dbname = "company";
 			String url = "jdbc:mysql://localhost:3306/" + dbname;
 
@@ -97,11 +92,18 @@ public class Search_Insert extends JFrame implements ActionListener {
 		}
 		else if (e.getSource() == executeButton) {
 			String select = selectTextArea.getText();
-			String from = fromTextArea.getText();
 			String where = whereTextArea.getText();
 			String sort = sortTextArea.getText();
-			String sql = "";
-			sql += "SELECT " + select + " FROM " + from;
+			String sql = "SELECT ";
+
+			if (select == null || select.isEmpty()) {
+				sql += "*";
+			} else {
+				sql += select;
+			}
+
+			sql += " FROM EMPLOYEE";
+
 			if (where != null && !where.isEmpty()) {
 				sql += " WHERE " + where;
 			}
@@ -119,7 +121,8 @@ public class Search_Insert extends JFrame implements ActionListener {
 
 				resultTable.setModel(new ResultSetTableModel(r));
 			} catch (SQLException ex) {
-				throw new RuntimeException(ex);
+				String error_string = ex.getMessage().toString();
+				JOptionPane.showMessageDialog(null, error_string);
 			}
 		}
 		else if (e.getSource() == insertButton) {
@@ -177,22 +180,22 @@ public class Search_Insert extends JFrame implements ActionListener {
 						Statement s = conn.createStatement();
 						int result = s.executeUpdate(sql);
 						insert.dispose();
-						JOptionPane.showMessageDialog(null, "직원 등록이 완료되었습니다.");
+						JOptionPane.showMessageDialog(null, "성공적으로 직원이 추가되었습니다!");
 					} catch (Exception e1) {
 						String error_string = e1.getMessage().toString();
 
 						if(error_string.contains("Duplicate entry")) {
-							JOptionPane.showMessageDialog(null, "Ssn이 존재합니다. 다른 Ssn을 입력해주세요.");
+							JOptionPane.showMessageDialog(null, "Ssn이 존재합니다! 다른 Ssn을 입력하세요!");
 						}else if(error_string.contains("Bdate")){
-							JOptionPane.showMessageDialog(null, "생일을 올바르게 입력해주세요");
+							JOptionPane.showMessageDialog(null, "생일을 올바르게 입력하세요!");
 						}else if(error_string.contains("For input string")){
-							JOptionPane.showMessageDialog(null, "Salary와 Dno는 숫자를 입력해야 합니다.");
+							JOptionPane.showMessageDialog(null, "급여와 부서 번호는 숫자를 입력하세요!");
 						}else if(error_string.contains("Minit")){
-							JOptionPane.showMessageDialog(null, "Minit에는 한 글자만 입력해주세요.");
+							JOptionPane.showMessageDialog(null, "Minit에는 한 글자만 입력하세요!");
 						}else if(error_string.contains("Ssn")){
-							JOptionPane.showMessageDialog(null, "Ssn은 9자리까지만 입력 가능합니다.");
+							JOptionPane.showMessageDialog(null, "Ssn은 9자리까지만 입력 가능합니다!");
 						}else {
-							JOptionPane.showMessageDialog(null, "다시 입력해주시기 바랍니다.");
+							JOptionPane.showMessageDialog(null, "다시 입력해주시기 바랍니다!");
 						}
 
 					}
