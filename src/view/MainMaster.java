@@ -17,15 +17,19 @@ public class MainMaster extends JFrame implements ActionListener {
     public MainMaster() {
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new FlowLayout());
+
+        mainPanel.setLayout(new GridBagLayout());
         mainPanel.add(Search_Insert_Button);
         mainPanel.add(Delete_Update_Button);
 
         Search_Insert_Button.addActionListener(this);
         Delete_Update_Button.addActionListener(this);
 
-        Search_Insert_Button.setPreferredSize(new Dimension(600, 600)); // 크기 조정
-        Delete_Update_Button.setPreferredSize(new Dimension(600, 600)); // 크기 조정
+        Search_Insert_Button.setPreferredSize(new Dimension(600, 500)); // 크기 조정
+        Delete_Update_Button.setPreferredSize(new Dimension(600, 500)); // 크기 조정
+
+        Search_Insert_Button.setFont(new Font("Dialog", Font.BOLD, 25));
+        Delete_Update_Button.setFont(new Font("Dialog", Font.BOLD, 25));
 
         add(mainPanel);
 
